@@ -1,0 +1,444 @@
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%-- Copyright (c) 2019 LTI. All rights reserved.--%>
+<%-- @author Deepanshu Singh --%>
+
+<style>
+#overflowTest {
+ 
+ 
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  width: 100%;
+  height: 150px;
+  overflow: auto;
+  border: 1px solid #ccc;
+}
+</style>
+
+
+<div class="custom-modal" data-id="assignSupportedGroupsToOrgId">
+	<div class="custom-modal-overlay"></div>
+	<div class="custom-popup">
+		<div class="popup-header">
+			<h3 id="<portlet:namespace />assignSupportedHeaderId"></h3>
+			<a href="javascript:void(0)"> <span class="ci icon-close"></span>  </a>
+		</div>
+		<div class="popup-body ">
+			<div class="customer-mgmt loader">
+				<div class="" id="<portlet:namespace />roleLoadingDivId">
+					<div id="<portlet:namespace />statusRoleUserDivId"></div>
+					<form action="<%=addsupportedByURL %>" name="<portlet:namespace />addsupportedByForm" id="<portlet:namespace />addsupportedByForm" method="post">
+						<div class="form-fields-content">
+						  <div id=addRoleUserIds>
+						     <input name="<portlet:namespace />classname"  type="hidden" />
+						     </div>
+							<%-- <input name="<portlet:namespace />classname" id="<portlet:namespace />addRoleUserIds" type="hidden" />  --%>
+							<input name="<portlet:namespace />key" id="<portlet:namespace />basedocKey" type="hidden" />
+							 
+								<div id="treeviewBreadcrumbDivId">
+									<c:if test="<%=companyOrg!=null %>">
+									<span class="treeview-breadcrumb" data-orgId="<%=companyOrgID%>" id="<portlet:namespace />docKey" onclick="javascript:getCorrespondingOUAndCompentency(this);"><%=companyOrg.getName() %></span>
+									</c:if>
+								</div>
+							
+							<h4 class="form-inner-title">OUs</h4>
+							<div class="input-feild">
+								<div class="form-group">
+									<div class="formHolder">
+										<span class="ci icon-chevron-down"></span>
+										<select class="selectpicker pr-30" name="<portlet:namespace />ouId" id="<portlet:namespace />ouId" showEmptyOption="true"">
+											<option value="">Select</option>
+											<% for(Organization org:ous)
+											{%>
+												<option value="<%=String.valueOf(org.getOrganizationId())%>"><%=org.getName() %></option>
+											<% } %>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<h4 class="form-inner-title">Competency</h4>
+							<div class="input-feild">
+								<div class="form-group">
+									<div class="formHolder">
+										<span class="ci icon-chevron-down"></span>
+										<select class="selectpicker pr-30" name="<portlet:namespace />competencyId" id="<portlet:namespace />competencyId" disabled="true" >
+											
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							
+							<div class="assgin-user-role-detail">
+							
+							     <div class="form-fields-content">
+									<h4 class="form-inner-title">Current Groups</h4>
+									<%-- <div class="input-feild">
+										<div class="form-group">
+											<span class="ci icon-search pointer-cursor" onclick="searchOrganizationUsers();"></span>
+											<input class="form-control input-default pl-35" id="<portlet:namespace />searchRoleUser" placeholder="Search Here" type="text" />
+										</div>
+									</div> --%>
+									<div id="overflowTest">
+									<ul class="original-checked-list" id="<portlet:namespace />CurrentGroupId">
+										
+									</ul>
+									</div>
+								</div>
+								
+								<div class="form-fields-content">
+									<h4 class="form-inner-title">Available Groups</h4>
+									<%-- <div class="input-feild">
+										<div class="form-group">
+											<span class="ci icon-search pointer-cursor" onclick="searchOrganizationUsers();"></span>
+											<input class="form-control input-default pl-35" id="<portlet:namespace />searchRoleUser" placeholder="Search Here" type="text" />
+										</div>
+									</div> --%>
+									<div id="overflowTest">
+									<ul class="original-checked-list" id="<portlet:namespace />doGroupId">
+										
+									</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="btn-group">
+							<button class="btn-custom " type="button" onclick="callparent()">Assign</button> 
+							<button class="btn-custom btn-custom-2 " type="button" onclick="closeCustomModal(this,'custom-modal')">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<portlet:resourceURL var="getList">
+<portlet:param name="<%=Constants.CMD %>" value="getOUChildren"/>
+</portlet:resourceURL>
+
+
+<portlet:resourceURL var="getGroupList">
+<portlet:param name="<%=Constants.CMD %>" value="getGroups"/>
+</portlet:resourceURL>
+
+
+
+<script>
+
+
+
+Liferay.provide(
+		window,
+		'getCorrespondingOUAndCompentency',
+		function(currBreadcrumbNode) {	
+			var A=AUI();
+			
+			var ouOrganizationId=currBreadcrumbNode.getAttribute("data-orgId");
+			
+			
+			//remove breadcrumb label after curr clicked label
+			var totalbreadcrumbLevel=document.getElementById("treeviewBreadcrumbDivId").childElementCount;
+			
+			if(totalbreadcrumbLevel!=1){
+				
+				var breadcrumbs=document.getElementById("treeviewBreadcrumbDivId");
+				var children = breadcrumbs.getElementsByTagName('span');
+				
+				var breadcrumbElmt=[];
+				var removeNode=false;
+				for(var i = 0; i < children.length; i++) {
+					
+					if(removeNode){
+						breadcrumbElmt.push(children[i]);
+					}
+					
+					if( children[i].getAttribute("data-orgId")==currBreadcrumbNode.getAttribute("data-orgId")){ removeNode=true; }
+					
+				}
+				
+				for(var element in  breadcrumbElmt){
+					console.log(breadcrumbElmt[element]);
+					breadcrumbs.removeChild(breadcrumbElmt[element]);
+				}
+			}
+			
+			
+			 url='<%=getList %>'+'&<portlet:namespace/>ouId=' + ouOrganizationId
+	         A.io.request(url,{
+	        	 dataType: 'json',
+	                 cache:false, 
+	                 on: {
+	                   success: function() {
+	                	   var data=this.get('responseData');
+	                	   
+	                	  
+	                	   if(data==null || data ==""){
+	                		   A.one('#<portlet:namespace/>comptencyId').set('disabled', true);
+	                           A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+	                	   }else{
+	                		   ouOptions = '<option value=""></option>';
+	                		   for (i = 0; i < data.ous.length; i++) {
+	                			   ouOptions += '<option value="' + data.ous[i].id + '">' + data.ous[i].name + '</option>';
+	                             }
+	                		   A.one('#<portlet:namespace/>ouId').html(ouOptions);
+	                           A.one('#<portlet:namespace/>ouId').set('disabled', false);
+	                           compOptions = '<option value=""></option>';
+	                		   for (i = 0; i < data.competencies.length; i++) {
+	                			   compOptions += '<option value="' + data.competencies[i].id + '">' + data.competencies[i].name + '</option>';
+	                             }
+	                		   A.one('#<portlet:namespace/>competencyId').html(compOptions);
+	                           A.one('#<portlet:namespace/>competencyId').set('disabled', false);
+	                            A.one('#<portlet:namespace/>doGroupId').html("");
+	                           A.one('#<portlet:namespace/>doGroupId').set('disabled', true); 
+	                	   }
+	                	   
+	                   },
+	                   failure:function(){
+							A.one('#<portlet:namespace/>competencyId').html("");
+							A.one('#<portlet:namespace/>competencyId').set('disabled', true); 
+							 A.one('#<portlet:namespace/>doGroupId').html("");
+	                           A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+							
+	                   }
+	                 }
+	         });
+			
+		}
+	);
+
+  	
+AUI().ready('aui-io-request',function(A){ 
+A.one('#<portlet:namespace/>ouId').on('change',function() {
+var ouId = this.val();
+A.one('#<portlet:namespace/>competencyId').html("");
+A.one('#<portlet:namespace/>competencyId').set('disabled', true);
+ 
+if ((ouId !== '') && (ouId!=0)) {
+ 
+ url='<%=getList %>'+'&<portlet:namespace/>ouId=' + ouId
+ 
+ 
+ A.io.request(url,{
+	 dataType: 'json',
+         cache:false, 
+         on: {
+           success: function() {
+        	   var data=this.get('responseData');
+        	   
+        	  
+        	   if(data==null || data ==""){
+        		   A.one('#<portlet:namespace/>comptencyId').set('disabled', true);
+                   A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+        	   }else{
+        		   var treeviewBreadcrumbDiv = A.one("#treeviewBreadcrumbDivId");
+      			 var breadcrumbLabel="<span class='treeview-breadcrumb' data-orgId='"+ouId+"' onclick='javascript:getCorrespondingOUAndCompentency(this);'> >> "+A.one("#<portlet:namespace />ouId option:selected").get("text");+"</span>";
+      			 treeviewBreadcrumbDiv.append(breadcrumbLabel);
+        		   ouOptions = '<option value=""></option>';
+        		   for (i = 0; i < data.ous.length; i++) {
+        			   ouOptions += '<option value="' + data.ous[i].id + '">' + data.ous[i].name + '</option>';
+                     }
+        		   A.one('#<portlet:namespace/>ouId').html(ouOptions);
+                   A.one('#<portlet:namespace/>ouId').set('disabled', false);
+                   compOptions = '<option value=""></option>';
+        		   for (i = 0; i < data.competencies.length; i++) {
+        			   compOptions += '<option value="' + data.competencies[i].id + '">' + data.competencies[i].name + '</option>';
+                     }
+        		   A.one('#<portlet:namespace/>competencyId').html(compOptions);
+                   A.one('#<portlet:namespace/>competencyId').set('disabled', false);
+                  
+        	   }
+        	   
+           },
+           failure:function(){
+				A.one('#<portlet:namespace/>competencyId').html("");
+				A.one('#<portlet:namespace/>competencyId').set('disabled', true);
+				A.one('#<portlet:namespace/>doGroupId').html("");
+                A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+				
+           }
+         }
+		}
+ );
+} else {
+A.one('#<portlet:namespace/>competencyId').html("");
+A.one('#<portlet:namespace/>competencyId').set('disabled', true);
+A.one('#<portlet:namespace/>doGroupId').html("");
+A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+}
+});
+
+
+A.one('#<portlet:namespace/>competencyId').on('change',function() {
+var competencyId = this.val();
+
+var selectedval="";
+
+	
+	selectedval=$("#<portlet:namespace />basedocKey").val();
+ 
+  
+  
+
+ A.one('#<portlet:namespace/>doGroupId').html("");
+
+if ((competencyId !== '') && (competencyId!=0)) {
+ 
+
+ url='<%=getGroupList %>'+'&<portlet:namespace/>competencyId=' + competencyId  +'&<portlet:namespace/>selectedval=' + selectedval
+ A.io.request(url,{
+	 dataType: 'json',
+         cache:false, 
+         on: {
+           success: function() {
+        	   var data=this.get('responseData');
+        	   if(data==null || data ==""){
+        		  
+        	   }else{
+        		   
+        		  
+        		   var htmlData="";
+                   
+        		   for (i = 0; i < data.competencies.length; i++) {
+        			  
+        			    // CREATE CHECK BOX.
+        			   htmlData +="<li>";	
+       	   			htmlData +="<div class=\"form-group\">";	
+       	   			htmlData +="<input name=\"<portlet:namespace/>checkbox\" type=\"checkbox\" id=\"user"+data.competencies[i].id+"\" value=\""+data.competencies[i].id+"\" datalabel=\""+data.competencies[i].name+"\" />";	
+       	   			htmlData +="<span class=\"checkmark\"></span></div>";	
+       	   				
+       	   			htmlData +="<div class=\"form-group-detail\" data-id=\"user"+data.competencies[i].id+"\">";	
+       	   			
+       	   			htmlData +="<div class=\"avtar-detail\"><input name=\"userId\" value=\""+data.competencies[i].id+"\" type=\"hidden\"><h5>"+data.competencies[i].name+"</h5></div>";	
+       	   			htmlData +="<a href=\"javascript:void(0)\" class=\"delete-item\"><i class=\"ci icon-close\"></i></a>";	
+       	   			htmlData +="</div>";	
+       	   			htmlData +="</li>"
+                     }
+        		   
+        		   var compdata="";
+        		   for (i = 0; i < data.supported.length; i++) 
+		        	   {
+        			   compdata +="<li>";	
+        			   compdata +="<div class=\"form-group\">";	
+        			   compdata +="<input name=\"<portlet:namespace/>checkbox\" type=\"checkbox\" id=\"user"+data.supported[i].id+"\" value=\""+data.supported[i].id+"\" checked=\"true\"  datalabel=\""+data.supported[i].name+"\" />";	
+        			   compdata +="<span class=\"checkmark\"></span></div>";	
+          	   				
+        			   compdata +="<div class=\"form-group-detail\" data-id=\"user"+data.supported[i].id+"\">";	
+          	   			
+        			   compdata +="<div class=\"avtar-detail\"><input name=\"userId\" value=\""+data.supported[i].id+"\" type=\"hidden\"><h5>"+data.supported[i].name+"</h5></div>";	
+        			   compdata +="<a href=\"javascript:void(0)\" class=\"delete-item\"><i class=\"ci icon-close\"></i></a>";	
+        			   compdata +="</div>";	
+        			   compdata +="</li>"
+		        	   } 
+        		   
+        		   
+        		   
+        		  
+        		    A.one('#<portlet:namespace/>doGroupId').html(htmlData);
+        		    
+        		    A.one('#<portlet:namespace/>CurrentGroupId').html(compdata);
+        		    
+        	   }
+        	   
+           },
+           failure:function(){
+				A.one('#<portlet:namespace/>doGroupId').html("");
+				A.one('#<portlet:namespace/>doGroupId').set('disabled', true);  
+				
+           }
+         }
+		}
+ );
+} else {
+A.one('#<portlet:namespace/>doGroupId').html("");
+A.one('#<portlet:namespace/>doGroupId').set('disabled', true);
+}
+});
+});
+</script>
+
+
+
+
+<script>
+
+function callparent()
+{
+	      var selectedval=new Set();
+	  
+	      $.each($("input[name='<portlet:namespace/>checkbox']:checked"),function(){
+		  
+	    	  var objectval = $(this).val();
+			  
+			  /* objectval["label"] = $(this).attr("datalabel");
+			  objectval["value"] = $(this).val(); */
+			  
+			  
+			  selectedval.add(objectval);
+		  
+		      });
+		    
+	      
+	      document.getElementById("addRoleUserIds").innerHTML="";
+	      
+	      var x = document.createElement("INPUT");
+			 x.setAttribute("type", "hidden");
+			 
+			 x.setAttribute("Name", "<portlet:namespace />classname");
+			 		 
+			 document.getElementById("addRoleUserIds").appendChild(x);
+	      
+	      if(selectedval!=null)
+	    	  {
+	    	 	
+	    	  
+	    	  for (var item of selectedval) 
+	    	    {	
+					var id=item;
+					
+					
+					
+					 var y = document.createElement("INPUT");
+					 
+					 y.setAttribute("type", "hidden");
+					 y.setAttribute("value", id);
+					 y.setAttribute("Name", "<portlet:namespace />classname");
+					 y.setAttribute("class", "form-control input-default");
+					 y.setAttribute("readonly", "readonly");
+					 
+					 document.getElementById("addRoleUserIds").appendChild(y);	
+				}	
+	    	  
+	    	   	
+				document.getElementById("<portlet:namespace />addsupportedByForm").submit();
+	    	  
+	    	  }
+	      else
+	    	  {
+	    	    	
+				document.getElementById("<portlet:namespace />addsupportedByForm").submit();
+	    	  }	       
+	     
+}
+
+</script>
+
+
+
+<script type="text/javascript">
+
+function closeCustomModal(currNode, modelClass){
+	
+	var modal = currNode.closest("."+modelClass);
+	modal.style.display = "none";
+}
+</script>
+

@@ -1,0 +1,36 @@
+<liferay-frontend:management-bar>
+		
+	<liferay-frontend:management-bar-buttons>
+		<liferay-frontend:management-bar-sidenav-toggler-button
+			icon="info-circle"
+			label="info"
+		/>
+
+		<liferay-frontend:management-bar-display-buttons
+			displayViews="<%= new String[] {"icon", "descriptive", "list"} %>"
+			portletURL="<%= iteratorURL %>"
+			selectedDisplayStyle="<%= displayStyle %>"
+		/>
+	</liferay-frontend:management-bar-buttons>
+	
+	
+	<%-- 	
+	<liferay-frontend:management-bar-filters>
+		<liferay-frontend:management-bar-navigation
+			label="<%=status%>"
+		>
+			<liferay-frontend:management-bar-filter-item active='<%= "all".equalsIgnoreCase(status) %>' label="all" url="javascript:filterRecord('all')" />
+			<liferay-frontend:management-bar-filter-item active='<%= "active".equalsIgnoreCase(status) %>' label="active" url="javascript:filterRecord('active')" />
+			<liferay-frontend:management-bar-filter-item active='<%= "disable".equalsIgnoreCase(status) %>' label="disable" url="javascript:filterRecord('disable')" />
+		</liferay-frontend:management-bar-navigation>
+		<liferay-frontend:management-bar-sort
+			orderByCol="<%= orderByCol %>"
+			orderByType="<%= orderByType %>"
+			orderColumns="<%= orderColumns %>"
+			portletURL="<%= iteratorURL %>"
+		/>
+	</liferay-frontend:management-bar-filters> 
+	--%>
+
+	    
+</liferay-frontend:management-bar>

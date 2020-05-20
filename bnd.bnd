@@ -1,0 +1,16 @@
+Bundle-Name: ipac-ci-definition-web
+Bundle-SymbolicName: com.lti.itops.ipac.cidefinition.web
+Bundle-Version: 1.0.0
+Export-Package: com.lti.itops.ipac.cidefinition.constants
+
+
+
+Bundle-ClassPath: .,lib/velocypack-1.4.3.jar,lib/arangodb-java-driver-6.4.1.jar,lib/jackson-core-2.9.10.jar
+
+
+
+Import-Package: !org.apache.http.*,\
+	*
+
+
+	

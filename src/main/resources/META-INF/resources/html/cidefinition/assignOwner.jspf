@@ -1,0 +1,121 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%-- Copyright (c) 2019 LTI. All rights reserved.--%>
+<%-- @author Shashi --%>
+
+<%-- <%@ include file="init.jsp" %>  --%>
+
+<style>
+#overflowTest {
+ 
+ 
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  width: 100%;
+  height: 260px;
+  overflow: auto;
+  border: 1px solid #ccc;
+}
+</style>
+
+<!-- popup for assign user -->
+<div class="custom-modal" data-id="assignOwnerToOrgId">
+	<div class="custom-modal-overlay"></div>
+	<div class="custom-popup">
+		<div class="popup-header">
+			<h3 id="<portlet:namespace />assignUserHeaderId"></h3>
+			<a href="javascript:void(0)"> <span class="ci icon-close"></span> </a>
+		</div>
+		<div class="popup-body ">
+			<div class="customer-mgmt loader">
+				<div class="show-loading" id="<portlet:namespace />loadingDivId">
+					<div id="<portlet:namespace />statusDivId"></div>
+					<form action="<%=updateAssignOwnerURL %>" name="<portlet:namespace />orgUserMapForm" id="<portlet:namespace />orgUserMapForm" method="post">
+						<input name="<portlet:namespace />addUserIds" id="<portlet:namespace />addUserIds" type="hidden" /> 
+						<input name="<portlet:namespace />userOrganizationId" id="<portlet:namespace />userOrganizationId" type="hidden" /> 
+						<input name="<portlet:namespace />Key" id="<portlet:namespace />Key" type="hidden"/> 
+						<div class="user-lists mb-20">
+							<h4 class="form-inner-title">Current</h4>
+							<ul class="coming-checked-list" id="<portlet:namespace />mappedUserList">
+	
+								
+								<%-- 
+								<%for(User usr : assignedOrgUsers) {  %>
+								<li>
+									<span class="avtar-profile">
+										<img src="<%=usr.getPortraitURL(themeDisplay) %>" alt="Profile" />
+									</span>
+									<div class="avtar-detail">
+										<input name="userId" value="<%=String.valueOf(usr.getUserId())%>" type="hidden" />
+										<h5><%=usr.getFullName() %></h5>
+										<!-- <small>Pied Piper</small> -->
+									</div>
+									<a href="javascript:void(0)" class="delete-item">
+										<i class="ci icon-close"></i>
+									</a>
+								</li>
+								<% } %>
+								 --%>
+								
+							</ul>
+						</div>
+						<div class="form-fields-content">
+							<h4 class="form-inner-title">Available</h4>
+							<div class="input-feild">
+								<div class="form-group">
+									<span class="ci icon-search pointer-cursor" onclick="searchPortalUsers()"></span>
+									<input class="form-control input-default pl-35" id="<portlet:namespace />searchUser" placeholder="Search Here" type="text" />
+								</div>
+							</div>
+							<div id="overflowTest">
+							<ul class="original-checked-list" id="<portlet:namespace />availableUserList">
+
+								<%-- 
+								<%for(User usr : portalUsers) {  %>
+								<li>
+									<div class="form-group">
+										<input name="checkbox" type="checkbox" id='<%="user"+usr.getUserId() %>' value="<%=String.valueOf(usr.getUserId()) %>" /> 
+										<span class="checkmark"></span>
+									</div>
+									<div class="form-group-detail" data-id='<%="user"+usr.getUserId() %>'>
+										<span class="avtar-profile">
+											<img src="<%=usr.getPortraitURL(themeDisplay) %>" alt="Profile" />
+										</span>
+										<div class="avtar-detail">
+											<input name="userId" value="<%=String.valueOf(usr.getUserId())%>" type="hidden" />
+											<h5><%=usr.getFullName() %></h5>
+											<!-- <small>Pied Piper</small> -->
+										</div>
+										<a href="javascript:void(0)" class="delete-item">
+											<i class="ci icon-close"></i>
+										</a>
+									</div>
+								</li>
+								<% } %>
+								 --%>
+								
+							</ul>
+							</div>
+						</div>
+						<div class="btn-group">
+							<button class="btn-custom " type="button" onclick="saveAssignUsersToOrg()">Assign</button>
+							<button class="btn-custom btn-custom-2 " type="button" onclick="closeCustomModal(this,'custom-modal')">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+function closeCustomModal(currNode, modelClass){
+	
+	var modal = currNode.closest("."+modelClass);
+	modal.style.display = "none";
+}
+</script>
+
